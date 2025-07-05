@@ -10,10 +10,9 @@ const pool = new Pool({
   connectionString: env.DATABASE_URL,
 });
 
-if (!globalForDb.pool) {
-  globalForDb.pool = pool;
-}
-
+globalForDb.pool ??= new Pool({
+  connectionString: env.DATABASE_URL,
+});
 export const db = drizzle(pool, {
   schema,
   logger: true, // Enable logging for debugging
