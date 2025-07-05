@@ -1,19 +1,20 @@
-import { createClient, type Client } from "@libsql/client";
-import { drizzle } from "drizzle-orm/libsql";
-
-import { env } from "~/env";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 import * as schema from "./schema";
 
-/**
- * Cache the database connection in development. This avoids creating a new connection on every HMR
- * update.
- */
-const globalForDb = globalThis as unknown as {
-  client: Client | undefined;
-};
+import { env } from "~/env";
 
-export const client =
-  globalForDb.client ?? createClient({ url: env.DATABASE_URL });
-if (env.NODE_ENV !== "production") globalForDb.client = client;
+const globalForDb = globalThis as unknown as { pool?: Pool };
 
-export const db = drizzle(client, { schema });
+const pool = new Pool({
+  connectionString: env.DATABASE_URL,
+});
+
+if (!globalForDb.pool) {
+  globalForDb.pool = pool;
+}
+
+export const db = drizzle(pool, {
+  schema,
+  logger: true, // Enable logging for debugging
+});

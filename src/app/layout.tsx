@@ -31,6 +31,7 @@ export default function RootLayout({
     <html lang="en" className={`${geist.variable}`}>
       <body>
         <TopNav />
+        <div className="border-b border-[#312259]"></div>
         {children}
       </body>
     </html>

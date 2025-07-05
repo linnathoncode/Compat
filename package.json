@@ -22,8 +22,10 @@
   "dependencies": {
     "@libsql/client": "^0.14.0",
     "@t3-oss/env-nextjs": "^0.12.0",
+    "@types/pg": "^8.15.4",
     "drizzle-orm": "^0.41.0",
     "next": "^15.2.3",
+    "pg": "^8.16.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "zod": "^3.24.2"
@@ -31,10 +33,11 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.0.15",
+    "@types/axios": "^0.14.4",
     "@types/node": "^20.14.10",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "drizzle-kit": "^0.30.5",
+    "drizzle-kit": "^0.30.6",
     "eslint": "^9.23.0",
     "eslint-config-next": "^15.2.3",
     "eslint-plugin-drizzle": "^0.2.3",

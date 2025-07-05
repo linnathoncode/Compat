@@ -1,12 +1,34 @@
-import { type Config } from "drizzle-kit";
+import { defineConfig } from "drizzle-kit";
 
-import { env } from "~/env";
-
-export default {
+export default defineConfig({
+  // Path(s) to your schema definitions
   schema: "./src/server/db/schema.ts",
-  dialect: "sqlite",
+
+  // Where to output migration SQL and snapshots
+  out: "./drizzle",
+
+  // Core SQL dialect (needed for migrations, introspection)
+  dialect: "postgresql",
+
+  // Optional: specify custom driver (typically omitted for basic Postgres)
+  // driver: "pglite" | "aws-data-api" | ...
+
+  // Credentials for your database connection
   dbCredentials: {
-    url: env.DATABASE_URL,
+    url: process.env.DATABASE_URL!,
   },
-  tablesFilter: ["compat_*"],
-} satisfies Config;
+
+  // Optional flags:
+  // strict: prompt before applying SQL
+  strict: true,
+
+  // verbose: log details during migration generation or push
+  verbose: true,
+
+  // If your provider includes roles (like Neon):
+  entities: {
+    roles: {
+      provider: "neon",
+    },
+  },
+});
