@@ -5,8 +5,10 @@ import {
   timestamp,
   integer,
   serial,
+  uuid,
 } from "drizzle-orm/pg-core";
 
+//example not actually used
 export const posts = pgTable(
   "compat_post",
   {
@@ -19,3 +21,32 @@ export const posts = pgTable(
   },
   (table) => [index("name_idx").on(table.name)],
 );
+
+export const users = pgTable("users", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: text("email").notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const spotifyAccounts = pgTable("spotify_accounts", {
+  userId: uuid("id")
+    .primaryKey()
+    .references(() => users.id),
+  accessToken: text("access_token").notNull(),
+  refreshToken: text("refresh_token").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  scope: text("scope"),
+  tokenType: text("token_type"),
+});
+
+export const backups = pgTable("backups", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id),
+  playlistId: text("playlist_id").notNull(),
+  playlistName: text("playlist_name").default("new playlist"),
+  format: text("format").default("json"),
+  dataUrl: text("data_url"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
