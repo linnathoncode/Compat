@@ -56,11 +56,8 @@ const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 };
 
-// Export GET and POST handlers with type safety
-export const GET = async (req: Request, res: Response) => {
-  return NextAuth(authOptions)(req, res);
-};
+// Create the NextAuth handler
+const handler = NextAuth(authOptions);
 
-export const POST = async (req: Request, res: Response) => {
-  return NextAuth(authOptions)(req, res);
-};
+// Export GET and POST handlers for App Router
+export { handler as GET, handler as POST };
