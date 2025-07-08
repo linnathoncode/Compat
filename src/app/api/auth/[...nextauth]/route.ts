@@ -56,9 +56,5 @@ const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 };
 
-const handler = NextAuth(authOptions) as (
-  req: NextApiRequest,
-  res: NextApiResponse,
-) => Promise<void>;
-
-export { handler as GET, handler as POST };
+export const GET = NextAuth(authOptions);
+export const POST = NextAuth(authOptions);
