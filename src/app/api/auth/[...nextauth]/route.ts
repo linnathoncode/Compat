@@ -56,5 +56,11 @@ const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 };
 
-export const GET = NextAuth(authOptions);
-export const POST = NextAuth(authOptions);
+// Export GET and POST handlers with type safety
+export const GET = async (req: Request, res: Response) => {
+  return NextAuth(authOptions)(req, res);
+};
+
+export const POST = async (req: Request, res: Response) => {
+  return NextAuth(authOptions)(req, res);
+};
