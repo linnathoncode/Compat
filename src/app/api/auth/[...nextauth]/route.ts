@@ -1,7 +1,9 @@
 import NextAuth from "next-auth";
 import SpotifyProvider from "next-auth/providers/spotify";
 import type { NextAuthOptions } from "next-auth";
+import type { NextApiRequest, NextApiResponse } from "next";
 
+// extend nextauth types to include session and jwt properties
 declare module "next-auth" {
   interface Session {
     accessToken?: string;
@@ -23,16 +25,16 @@ const authOptions: NextAuthOptions = {
     SpotifyProvider({
       clientId: process.env.SPOTIFY_CLIENT_ID!,
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET!,
-      authorization:
-        "https://accounts.spotify.com/authorize?" +
-        new URLSearchParams({
+      authorization: {
+        params: {
           scope: [
             "user-read-email",
             "playlist-read-private",
             "playlist-modify-public",
             "playlist-modify-private",
           ].join(" "),
-        }).toString(),
+        },
+      },
     }),
   ],
   callbacks: {
@@ -54,5 +56,9 @@ const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 };
 
-const handler = NextAuth(authOptions);
+const handler = NextAuth(authOptions) as (
+  req: NextApiRequest,
+  res: NextApiResponse,
+) => Promise<void>;
+
 export { handler as GET, handler as POST };
