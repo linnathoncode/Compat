@@ -1,7 +1,6 @@
 import NextAuth from "next-auth";
 import SpotifyProvider from "next-auth/providers/spotify";
 import type { NextAuthOptions } from "next-auth";
-import type { NextApiRequest, NextApiResponse } from "next";
 
 // extend nextauth types to include session and jwt properties
 declare module "next-auth" {
@@ -47,9 +46,15 @@ const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      session.accessToken = token.accessToken;
-      session.refreshToken = token.refreshToken;
-      session.expiresAt = token.expiresAt;
+      if (typeof token.accessToken === "string") {
+        session.accessToken = token.accessToken;
+      }
+      if (typeof token.refreshToken === "string") {
+        session.refreshToken = token.refreshToken;
+      }
+      if (typeof token.expiresAt === "number") {
+        session.expiresAt = token.expiresAt;
+      }
       return session;
     },
   },
@@ -57,7 +62,7 @@ const authOptions: NextAuthOptions = {
 };
 
 // Create the NextAuth handler
-const handler = NextAuth(authOptions);
+const handler = NextAuth(authOptions) as (req: Request) => Promise<Response>;
 
 // Export GET and POST handlers for App Router
 export { handler as GET, handler as POST };
