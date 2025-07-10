@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSpotifyPlaylist } from "~/lib/spotify";
 import { getServerSession } from "next-auth";
-import { authOptions } from "~/app/api/auth/[...nextauth]/route";
+import { authOptions } from "~/app/api/auth/[...nextauth]/config";
 
 export async function GET(
   _request: NextRequest,
