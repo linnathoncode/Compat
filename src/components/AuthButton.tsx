@@ -2,9 +2,10 @@
 
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useState } from "react";
+import { useAuth } from "~/context/AuthContext";
 
 export default function AuthButton() {
-  const { data: session, status } = useSession();
+  const { session, status } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const disabled = loading || status === "loading";
