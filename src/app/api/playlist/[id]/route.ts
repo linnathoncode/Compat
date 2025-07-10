@@ -1,15 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { getSpotifyPlaylist } from "~/lib/spotify";
 import { getServerSession } from "next-auth";
 import { authOptions } from "~/app/api/auth/[...nextauth]/config";
-
 export async function GET(
   _request: NextRequest,
   context: { params: Promise<{ id: string }> },
 ) {
   const params = await context.params;
   const session = await getServerSession(authOptions);
-  const accessToken = session?.accessToken;
+  const accessToken = (session as { accessToken?: string } | null)?.accessToken;
   //   const accessToken = req.headers.get("Authorization")?.split("Bearer ")[1];
   console.log(accessToken);
 
@@ -23,7 +23,9 @@ export async function GET(
   try {
     const playlist = await getSpotifyPlaylist(params.id, accessToken);
     return NextResponse.json(playlist);
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err) {
+    const errorMessage =
+      err instanceof Error ? err.message : "An unknown error occurred";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
