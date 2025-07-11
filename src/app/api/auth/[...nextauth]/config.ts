@@ -80,8 +80,8 @@ export const authOptions: NextAuthOptions = {
         .insert(spotifyAccounts)
         .values({
           userId: existingUser.id,
-          accessToken: account.access_token!,
-          refreshToken: account.refresh_token!,
+          accessToken: account.access_token,
+          refreshToken: account.refresh_token,
           expiresAt: new Date(
             account.expires_at ? account.expires_at * 1000 : Date.now(),
           ),
@@ -120,7 +120,7 @@ export const authOptions: NextAuthOptions = {
       if (typeof token.expiresAt === "number") {
         session.expiresAt = token.expiresAt;
       }
-      if (typeof token.userid === "string") {
+      if (typeof token.userId === "string") {
         session.userId = token.userId;
       }
       return session;
