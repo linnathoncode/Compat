@@ -6,6 +6,7 @@ import {
   integer,
   serial,
   uuid,
+  jsonb,
 } from "drizzle-orm/pg-core";
 
 //example not actually used
@@ -33,6 +34,7 @@ export const spotifyAccounts = pgTable("spotify_accounts", {
     .primaryKey()
     .references(() => users.id),
   accessToken: text("access_token").notNull(),
+  spotifyId: text("spotify_id").notNull(),
   refreshToken: text("refresh_token").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
   scope: text("scope"),
@@ -46,7 +48,15 @@ export const backups = pgTable("backups", {
     .references(() => users.id),
   playlistId: text("playlist_id").notNull(),
   playlistName: text("playlist_name").default("new playlist"),
+  playlistData: jsonb("playlist_data").notNull(),
+  ownerName: text("owner_name"),
+  trackCount: integer("track_count").default(0),
+  spotifyUrl: text("spotify_url"),
+  imageUrl: text("image_url"),
   format: text("format").default("json"),
   dataUrl: text("data_url"),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });

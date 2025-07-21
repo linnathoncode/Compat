@@ -7,10 +7,15 @@ import { spotifyAccounts, users } from "~/server/db/schema";
 // extend nextauth types to include session and jwt properties
 declare module "next-auth" {
   interface Session {
+    user: {
+      name?: string;
+      email: string;
+    };
     accessToken?: string;
     refreshToken?: string;
     expiresAt?: number;
-    userId?: string;
+    userId: string;
+    spotifyId?: string;
   }
 }
 
@@ -19,7 +24,8 @@ declare module "next-auth/jwt" {
     accessToken?: string;
     refreshToken?: string;
     expiresAt?: number;
-    userId?: string;
+    userId: string;
+    spotifyId?: string;
   }
 }
 
@@ -44,6 +50,7 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account }) {
       // Deny login if any critical info is missing
       if (!user.email || !account?.access_token || !account?.refresh_token) {
+        console.log("info missing");
         return false;
       }
 
@@ -82,6 +89,7 @@ export const authOptions: NextAuthOptions = {
           userId: existingUser.id,
           accessToken: account.access_token,
           refreshToken: account.refresh_token,
+          spotifyId: account.providerAccountId,
           expiresAt: new Date(
             account.expires_at ? account.expires_at * 1000 : Date.now(),
           ),
@@ -92,6 +100,7 @@ export const authOptions: NextAuthOptions = {
           target: spotifyAccounts.userId,
           set: {
             accessToken: account.access_token,
+            spotifyId: account.providerAccountId,
             refreshToken: account.refresh_token,
             expiresAt: new Date(account.expires_at! * 1000),
             scope: account.scope ?? "",
@@ -106,10 +115,11 @@ export const authOptions: NextAuthOptions = {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
         token.expiresAt = account.expires_at;
-        token.userId = account.userId;
+        token.userId = account.userId!;
       }
       return token;
     },
+
     async session({ session, token }) {
       if (typeof token.accessToken === "string") {
         session.accessToken = token.accessToken;
@@ -122,6 +132,9 @@ export const authOptions: NextAuthOptions = {
       }
       if (typeof token.userId === "string") {
         session.userId = token.userId;
+      }
+      if (typeof token.spotifyId === "string") {
+        session.spotifyId = token.spotifyId;
       }
       return session;
     },
