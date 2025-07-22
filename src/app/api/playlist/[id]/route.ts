@@ -6,8 +6,6 @@ import { getServerSession } from "next-auth";
 import { backups } from "~/server/db/schema";
 import { eq, and } from "drizzle-orm";
 import { db } from "~/server/db";
-import { equal } from "node:assert";
-import { Edu_QLD_Beginner } from "next/font/google";
 import { authOptions } from "../../auth/[...nextauth]/config";
 
 async function getBackupFromDatabase(playlistId: string, userId: string) {
@@ -38,12 +36,20 @@ async function fetchPlaylistWithRetry(
       initialAccessToken,
     );
     return { playlistData, tokenRefreshed: false };
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Check if error is due to expired token
     const isTokenExpired =
-      error.message.includes("401") ||
-      error.message.includes("The access token expired") ||
-      error.message.includes("Invalid access token");
+      typeof error === "object" &&
+      error !== null &&
+      "message" in error &&
+      typeof (error as { message: unknown }).message === "string" &&
+      ((error as { message: string }).message.includes("401") ||
+        (error as { message: string }).message.includes(
+          "The access token expired",
+        ) ||
+        (error as { message: string }).message.includes(
+          "Invalid access token",
+        ));
 
     if (!isTokenExpired || !refreshToken) {
       throw error; // Re-throw if not a token issue or no refresh token
@@ -159,19 +165,27 @@ export async function GET(
         },
       }),
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Playlist fetch error:", error);
 
     // Return appropriate error response
-    if (error.message.includes("User not found")) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "message" in error &&
+      typeof (error as { message: unknown }).message === "string"
+    ) {
+      const message = (error as { message: string }).message;
+      if (message.includes("User not found")) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
 
-    if (error.message.includes("Authentication failed")) {
-      return NextResponse.json(
-        { error: error.message, requiresReauth: true },
-        { status: 401 },
-      );
+      if (message.includes("Authentication failed")) {
+        return NextResponse.json(
+          { error: message, requiresReauth: true },
+          { status: 401 },
+        );
+      }
     }
 
     const errorMessage =

@@ -5,9 +5,16 @@ import { useAuth } from "~/context/AuthContext";
 import { getPlaylistForBackup } from "~/lib/spotify";
 import getBackupFromDatabase from "~/services/backupService";
 import { refreshAccessToken } from "~/lib/spotify";
+type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
 
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+interface SpotifyApiResponse {
+  source: string;
+  data: Json; // or a more specific type if you know it
+  tokenRefreshed?: boolean;
+  newTokens?: {
+    accessToken: string;
+    refreshToken: string;
+  };
 }
 
 {
@@ -25,7 +32,7 @@ export default function TextField() {
   const [value, setValue] = useState("");
   const { session, status } = useAuth();
   const [isLoading, setLoading] = useState(false);
-  const [backupState, setBackup] = useState<any>(null);
+  // const [backupState, setBackup] = useState<any>(null); // unsafe like this
 
   if (status === "loading") {
     return (
@@ -49,7 +56,7 @@ export default function TextField() {
 
     const regex =
       /^https:\/\/open\.spotify\.com\/playlist\/([a-zA-Z0-9]+)(\?.*)?$/;
-    const match = value.match(regex);
+    const match = regex.exec(value);
 
     if (!match) {
       alert("Please enter a valid Spotify playlist URL.");
@@ -76,7 +83,27 @@ export default function TextField() {
         headers: { "Content-Type": "application/json" },
       });
 
-      const { source, data, tokenRefreshed, newTokens } = await response.json();
+      let source: string;
+      let data: Json; // or your specific type
+      // let tokenRefreshed: boolean | undefined;
+      // let newTokens: { accessToken: string; refreshToken: string } | undefined;
+
+      const json: unknown = await response.json();
+      if (
+        typeof json === "object" &&
+        json !== null &&
+        typeof (json as { source?: unknown }).source === "string" &&
+        "data" in json
+      ) {
+        const parsed = json as SpotifyApiResponse;
+        source = parsed.source;
+        data = parsed.data;
+        // tokenRefreshed = parsed.tokenRefreshed;
+        // newTokens = parsed.newTokens;
+      } else {
+        throw new Error("Invalid API response format");
+      }
+
       console.log(data);
       if (source == "database") {
         // Handle existing backup

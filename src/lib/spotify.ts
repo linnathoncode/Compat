@@ -117,7 +117,7 @@ export async function getPlaylistForBackup(
     playlistId: playlist.id,
     playlistName: playlist.name,
     playlistData: playlist,
-    ownerName: playlist.owner.display_name || playlist.owner.id,
+    ownerName: playlist.owner.display_name ?? playlist.owner.id,
     trackCount: playlist.tracks.total,
     spotifyUrl: playlist.external_urls.spotify,
     imageUrl: playlist.images.length > 0 ? playlist.images[0]!.url : null,
