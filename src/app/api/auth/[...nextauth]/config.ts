@@ -110,12 +110,23 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
 
-    async jwt({ token, account }) {
+    async jwt({ token, account, user }) {
       if (account) {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
         token.expiresAt = account.expires_at;
-        token.userId = account.userId!;
+
+        if (user?.email) {
+          const existinguser = await db.query.users.findFirst({
+            where: eq(users.email, user.email),
+            columns: {
+              id: true,
+            },
+          });
+          if (existinguser?.id) {
+            token.userId = existinguser.id;
+          }
+        }
       }
       return token;
     },

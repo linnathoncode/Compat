@@ -10,6 +10,7 @@ export default function HomePage() {
   const { status } = useAuth();
 
   useEffect(() => {
+    console.log(status);
     if (status === "unauthenticated") {
       router.push("/");
     }

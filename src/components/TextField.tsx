@@ -2,15 +2,30 @@
 
 import React, { useState } from "react";
 import { useAuth } from "~/context/AuthContext";
+import { getPlaylistForBackup } from "~/lib/spotify";
+import getBackupFromDatabase from "~/services/backupService";
+import { refreshAccessToken } from "~/lib/spotify";
 
-// function sleep(ms: number) {
-//   return new Promise((resolve) => setTimeout(resolve, ms));
-// }
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+{
+  /* TO:DO 
+  First: Check if the list if legit
+  Second: Check if playlist is already backedup
+    if backuped give the user the option the update the save
+    if not give user the backup the playlist
+  Third: Make a page to see all backedup playlist of a user 
+  Forth: Optionso download the saves
+  */
+}
 
 export default function TextField() {
   const [value, setValue] = useState("");
   const { session, status } = useAuth();
   const [isLoading, setLoading] = useState(false);
+  const [backupState, setBackup] = useState<any>(null);
 
   if (status === "loading") {
     return (
@@ -31,12 +46,52 @@ export default function TextField() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    console.log(value);
-    setValue("");
-    // await sleep(2000); // sleep for 2 seconds
+
+    const regex =
+      /^https:\/\/open\.spotify\.com\/playlist\/([a-zA-Z0-9]+)(\?.*)?$/;
+    const match = value.match(regex);
+
+    if (!match) {
+      alert("Please enter a valid Spotify playlist URL.");
+      setValue("");
+      setLoading(false);
+      return;
+    }
+
+    const playlistId = match[1];
+    const userId = session?.userId;
+
+    if (!userId) {
+      alert("userId not found please sign back in!");
+      console.log(userId);
+      setValue("");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // Make API call instead of direct database query
+      const response = await fetch(`/api/playlist/${playlistId}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const { source, data, tokenRefreshed, newTokens } = await response.json();
+      console.log(data);
+      if (source == "database") {
+        // Handle existing backup
+        console.log("Backup already exists:", data);
+      } else {
+        // Proceed with creating new backup
+        console.log("Creating new backup...");
+      }
+    } catch (error) {
+      console.error("Error checking backup:", error);
+      alert("Failed to check existing backups");
+    }
+
     setLoading(false);
   };
-
   return (
     <form onSubmit={handleSubmit}>
       <input
