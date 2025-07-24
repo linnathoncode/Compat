@@ -18,6 +18,15 @@ export interface SpotifyApiResponse {
   };
 }
 
+/**
+ * playlistName: string;
+  imageUrl?: string;
+  trackCount: number;
+  spotifyUrl?: string;
+  source: string;
+  ownerName: string;
+ */
+
 export default function usePlaylistData(playlistId: string | null) {
   const [data, setData] = useState<Json | null>(null);
   const [source, setSource] = useState<string | null>(null);

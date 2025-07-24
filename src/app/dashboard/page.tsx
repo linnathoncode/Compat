@@ -2,10 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import PlaylistDisplayCard from "~/components/PlaylistDisplayCard";
 import PlaylistInputForm from "~/components/PlaylistInputForm";
 // import TextField from "~/components/TextField";
 import { useAuth } from "~/context/AuthContext";
 import usePlaylistData from "~/hooks/usePlaylistData";
+import type { PlaylistDisplayCardProps } from "~/types/PlaylistDisplayCardProps";
 
 export default function HomePage() {
   const router = useRouter();
@@ -27,6 +29,12 @@ export default function HomePage() {
         isLoading={isLoading}
         onSubmit={(id) => setPlaylistId(id)}
       />
+      {data && source && typeof data === "object" && !Array.isArray(data) && (
+        <PlaylistDisplayCard
+          data={data as PlaylistDisplayCardProps}
+          source={source}
+        />
+      )}
     </main>
   );
 }
