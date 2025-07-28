@@ -24,7 +24,7 @@ export default function HomePage() {
   }, [router, status]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-start bg-gradient-to-b from-[#000000f9] to-[#1e152c] pt-12 text-white">
+    <main className="flex min-h-screen flex-col items-center justify-start bg-gradient-to-b from-[#000000f9] to-[#1e152c] bg-fixed pt-12 text-white">
       <PlaylistInputForm
         isLoading={isLoading}
         onSubmit={(id) => setPlaylistId(id)}
