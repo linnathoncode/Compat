@@ -38,6 +38,7 @@ export default function AuthButton() {
         <>
           <span className="text-sm text-white">
             Hi, {session.user?.name?.toUpperCase()}
+            {/* UserId: {session.userId} */}
           </span>
           <button
             className={

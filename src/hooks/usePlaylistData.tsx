@@ -73,6 +73,6 @@ export default function usePlaylistData(playlistId: string | null) {
     void fetchedPlaylist();
   }, [playlistId]);
 
-  console.log(data);
+  // console.log(data);
   return { data, source, isLoading, error };
 }

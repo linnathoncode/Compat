@@ -6,6 +6,7 @@ import type { PlaylistContentsProps } from "~/types/PlaylistContentsProps";
 import type { PlaylistDisplayCardProps } from "~/types/PlaylistDisplayCardProps";
 import PlaylistContents from "./PlaylistContents";
 import { AnimatePresence, motion } from "framer-motion";
+import { useSaveBackup } from "~/hooks/useSaveBackup";
 
 type Props = {
   data: PlaylistDisplayCardProps;
@@ -14,6 +15,17 @@ type Props = {
 
 const PlaylistDisplayCard = ({ data, source }: Props) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { saveBackup, loading } = useSaveBackup();
+  const [isPlaylistBackupLoading, setPlaylistBackupLoading] = useState(false);
+  const [isPlaylistSaved, setPlaylistSaved] = useState(source === "database");
+
+  async function handleSave() {
+    await saveBackup({
+      data: data,
+      source: "database", //?????
+    });
+  }
+
   if (data.trackCount == 0) return null;
 
   function mapSpotifyTracksToProps(
@@ -33,14 +45,23 @@ const PlaylistDisplayCard = ({ data, source }: Props) => {
         <button
           className="absolute top-4 left-4 flex h-8 w-8 items-center justify-center rounded-full bg-purple-900 transition-colors hover:bg-purple-700"
           title="Toggle saved state"
-          onClick={() => {
-            // Trigger save/unsave event (logic not implemented)
+          onClick={async () => {
+            if (!isPlaylistSaved) {
+              setPlaylistBackupLoading(true);
+              console.log("saving to database");
+              await handleSave();
+              console.log("playlist saved to database");
+            } else {
+              //handle update logic
+              console.log("playlist already in database");
+            }
+            setPlaylistSaved(true);
+            setPlaylistBackupLoading(false);
           }}
           type="button"
+          disabled={isPlaylistBackupLoading}
         >
-          {/* Saved state: show tick, Not saved: show empty circle */}
-          {/* Replace 'true' with actual saved state */}
-          {true ? (
+          {isPlaylistSaved ? (
             <svg
               className="h-5 w-5 text-green-400"
               fill="none"
