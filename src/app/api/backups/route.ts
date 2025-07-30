@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { db } from "~/server/db";
 import { backups } from "~/server/db/schema";
 import { authOptions } from "../auth/[...nextauth]/config";
+import { eq } from "drizzle-orm";
 
 type CreateBackupBody = {
   playlistName: string;
@@ -16,8 +17,17 @@ type CreateBackupBody = {
 };
 
 export async function GET() {
-  const allBackups = await db.select().from(backups);
-  return NextResponse.json(allBackups);
+  const session = await getServerSession(authOptions);
+
+  if (!session?.userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const userBackups = await db.query.backups.findMany({
+    where: (row) => eq(row.userId, session.userId),
+  });
+
+  return NextResponse.json(userBackups);
 }
 
 export async function POST(req: Request) {

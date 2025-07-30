@@ -9,7 +9,12 @@ export default function TopNav() {
   if (status === "loading") {
     return (
       <nav className="flex h-10 w-full items-center justify-between bg-[#1e152c] p-8 text-5xl font-light text-white">
-        <span>Compat</span>
+        <button
+          className="cursor-pointer border-none bg-transparent text-5xl leading-none font-light text-white"
+          onClick={() => (window.location.href = "/dashboard")}
+        >
+          Compat
+        </button>
         <span className="animate-pulse text-sm text-gray-300">Loading...</span>
       </nav>
     );
@@ -17,7 +22,12 @@ export default function TopNav() {
 
   return (
     <nav className="flex h-10 w-full items-center justify-between bg-[#1e152c] p-8 text-5xl font-light text-white">
-      <span className="leading-none">Compat</span>
+      <button
+        className="cursor-pointer border-none bg-transparent text-5xl leading-none font-light text-white"
+        onClick={() => (window.location.href = "/dashboard")}
+      >
+        Compat
+      </button>
       <AuthButton />
     </nav>
   );

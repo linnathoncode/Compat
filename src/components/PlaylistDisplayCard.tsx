@@ -7,6 +7,7 @@ import type { PlaylistDisplayCardProps } from "~/types/PlaylistDisplayCardProps"
 import PlaylistContents from "./PlaylistContents";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSaveBackup } from "~/hooks/useSaveBackup";
+import { BasePlaylistCard } from "./BasePlaylistCard";
 
 type Props = {
   data: PlaylistDisplayCardProps;
@@ -40,8 +41,7 @@ const PlaylistDisplayCard = ({ data, source }: Props) => {
 
   return (
     <>
-      <div className="2x1 relative m-10 flex w-240 max-w-3xl items-center gap-6 rounded-lg border border-purple-950 bg-[#1e152c] p-6 shadow-md">
-        {/* Tick Indicator */}
+      <BasePlaylistCard data={data} source={source}>
         <button
           className="absolute top-4 left-4 flex h-8 w-8 items-center justify-center rounded-full bg-purple-900 transition-colors hover:bg-purple-700"
           title="Toggle saved state"
@@ -87,31 +87,7 @@ const PlaylistDisplayCard = ({ data, source }: Props) => {
             </svg>
           )}
         </button>
-        {data.imageUrl && (
-          <img
-            src={data.imageUrl}
-            alt={data.playlistName}
-            width={180}
-            height={180}
-            className="rounded-sm object-cover"
-          />
-        )}
-        <div className="flex flex-col">
-          <h2 className="text-2xl font-bold">{data.playlistName}</h2>
-          <p className="text-lg text-zinc-300">Created by: {data.ownerName}</p>
-          <p className="text-lg text-zinc-300">{data.trackCount} tracks</p>
-          <p className="text-lg text-zinc-300">Source: {source}</p>
-          {data.spotifyUrl && (
-            <Link
-              href={data.spotifyUrl}
-              className="mt-2 text-sm text-green-600 hover:underline"
-              target="_blank"
-            >
-              View on Spotify
-            </Link>
-          )}
-        </div>
-        {/* Collapse/Decollapse Button */}
+        {/* Collapse/Decollapse Button */}{" "}
         <button
           className="absolute right-4 bottom-4 flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-purple-700"
           title="Collapse/Expand"
@@ -151,7 +127,7 @@ const PlaylistDisplayCard = ({ data, source }: Props) => {
             </svg>
           )}
         </button>
-      </div>
+      </BasePlaylistCard>
       {/* PlaylistContents below the display card */}
       <AnimatePresence>
         {isCollapsed && (
@@ -168,5 +144,68 @@ const PlaylistDisplayCard = ({ data, source }: Props) => {
       </AnimatePresence>
     </>
   );
+  // return (
+  //   <>
+  //     <div className="2x1 relative m-10 flex w-240 max-w-3xl items-center gap-6 rounded-lg border border-purple-950 bg-[#1e152c] p-6 shadow-md">
+  //       {/* Tick Indicator */}
+  //
+  //
+  //       {/* Collapse/Decollapse Button */}
+  //       <button
+  //         className="absolute right-4 bottom-4 flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-purple-700"
+  //         title="Collapse/Expand"
+  //         type="button"
+  //         onClick={() => setIsCollapsed((prev) => !prev)}
+  //       >
+  //         {/* Icon: Down arrow for collapse, up arrow for expand */}
+  //         {isCollapsed ? (
+  //           // Up arrow (expanded)
+  //           <svg
+  //             className="h-5 w-5 text-white"
+  //             fill="none"
+  //             stroke="currentColor"
+  //             strokeWidth={2.5}
+  //             viewBox="0 0 24 24"
+  //           >
+  //             <path
+  //               strokeLinecap="round"
+  //               strokeLinejoin="round"
+  //               d="M5 15l7-7 7 7"
+  //             />
+  //           </svg>
+  //         ) : (
+  //           // Down arrow (collapsed)
+  //           <svg
+  //             className="h-5 w-5 text-white"
+  //             fill="none"
+  //             stroke="currentColor"
+  //             strokeWidth={2.5}
+  //             viewBox="0 0 24 24"
+  //           >
+  //             <path
+  //               strokeLinecap="round"
+  //               strokeLinejoin="round"
+  //               d="M19 9l-7 7-7-7"
+  //             />
+  //           </svg>
+  //         )}
+  //       </button>
+  //     </div>
+  //     {/* PlaylistContents below the display card */}
+  //     <AnimatePresence>
+  //       {isCollapsed && (
+  //         <motion.div
+  //           key="playlist-contents"
+  //           initial={{ opacity: 0, y: 16 }}
+  //           animate={{ opacity: 1, y: 0 }}
+  //           exit={{ opacity: 0, y: 16 }}
+  //           transition={{ duration: 0.3 }}
+  //         >
+  //           <PlaylistContents tracks={mapSpotifyTracksToProps(data)} />
+  //         </motion.div>
+  //       )}
+  //     </AnimatePresence>
+  //   </>
+  // );
 };
 export default PlaylistDisplayCard;

@@ -1,3 +1,5 @@
+//check if services are used
+
 import { db } from "~/server/db";
 import { eq } from "drizzle-orm";
 

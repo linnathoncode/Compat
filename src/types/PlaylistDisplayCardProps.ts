@@ -9,6 +9,7 @@ export type PlaylistDisplayCardProps = {
   trackCount: number;
   spotifyUrl: string;
   imageUrl: string;
+  playlistId: string;
 };
 
 type SpotifyPlaylistItem = {
